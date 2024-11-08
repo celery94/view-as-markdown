@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { Readability } from "@mozilla/readability";
+import TurndownService from "turndown";
 
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -14,7 +15,9 @@ const ReadingMode = () => {
         const reader = new Readability(documentClone);
         const article = reader.parse();
         if (article) {
-          setContent(article.content);
+          const turndownService = new TurndownService();
+          const markdown = turndownService.turndown(article.content);
+          setContent(markdown);
           setIsOpen(!isOpen);
           sendResponse({ success: true });
         }
@@ -30,7 +33,9 @@ const ReadingMode = () => {
         <button className="absolute right-2 top-2 border-none bg-transparent text-2xl cursor-pointer" onClick={() => setIsOpen(false)}>
           ×
         </button>
-        <div className="prose" dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="prose">
+          <pre>{content}</pre>
+        </div>
       </div>
     </div>
   );
