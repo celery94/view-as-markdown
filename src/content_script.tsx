@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
+import ReactMarkdown from "react-markdown";
 
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -33,8 +34,13 @@ const ReadingMode = () => {
         <button className="absolute right-2 top-2 border-none bg-transparent text-2xl cursor-pointer" onClick={() => setIsOpen(false)}>
           ×
         </button>
-        <div className="prose">
-          <pre>{content}</pre>
+        <div className="flex">
+          <div className="w-1/2 p-2 prose">
+            <pre>{content}</pre>
+          </div>
+          <div className="w-1/2 p-2 overflow-y-auto">
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </div>
         </div>
       </div>
     </div>
