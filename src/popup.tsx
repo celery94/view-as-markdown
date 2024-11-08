@@ -21,9 +21,14 @@ const Popup = () => {
     });
   };
 
+  useEffect(() => {
+    toggleReadingMode();
+  }, []);
+
   return (
     <>
-      <button onClick={toggleReadingMode}>Reading Mode</button>
+      {/* Remove the button if it's no longer needed */}
+      {/* <button onClick={toggleReadingMode}>Reading Mode</button> */}
     </>
   );
 };
