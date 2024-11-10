@@ -8,8 +8,10 @@ import ReactMarkdown from "react-markdown";
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
+  const [header, setHeader] = React.useState("");
   const [showMarkdown, setShowMarkdown] = React.useState(true);
   const [copied, setCopied] = React.useState(false);
+  const [copiedMarkdown, setCopiedMarkdown] = React.useState(false);
   const renderedContentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -30,6 +32,18 @@ const ReadingMode = () => {
             linkStyle: "inlined",
             linkReferenceStyle: "full",
           });
+
+          const header = `---
+pubDatetime: ${article.publishedTime.substring(0, 10)}
+tags: []
+source: ${window.location.href}
+author: ${article.byline}
+title: ${article.title}
+description: ${article.excerpt}
+---`;
+
+          setHeader(header);
+
           const markdown = `# ${article.title}` + "\n\n" + turndownService.turndown(article.content);
           setContent(markdown);
           setIsOpen(!isOpen);
@@ -51,6 +65,16 @@ const ReadingMode = () => {
     }
   };
 
+  const handleCopyMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMarkdown(true);
+      setTimeout(() => setCopiedMarkdown(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy markdown:", err);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -59,6 +83,9 @@ const ReadingMode = () => {
         <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-base-200 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
           <div className="flex items-center gap-2">
+            <button className={`btn btn-sm ${copiedMarkdown ? "btn-success" : "btn-ghost"}`} onClick={handleCopyMarkdown}>
+              {copiedMarkdown ? "Copied!" : "Copy Markdown"}
+            </button>
             <button className={`btn btn-sm ${copied ? "btn-success" : "btn-ghost"}`} onClick={handleCopy}>
               {copied ? "Copied!" : "Copy Content"}
             </button>
@@ -76,7 +103,15 @@ const ReadingMode = () => {
         <div className="flex flex-1 overflow-hidden">
           {showMarkdown && (
             <div className="w-1/2 p-4 border-r">
-              <textarea className="textarea textarea-bordered w-full h-full font-mono" value={content} onChange={(e) => setContent(e.target.value)} />
+              <textarea
+                className="textarea textarea-bordered w-full h-full font-mono"
+                value={header + "\n\n" + content}
+                onChange={(e) => {
+                  const [newHeader, ...newContent] = e.target.value.split("\n\n");
+                  setHeader(newHeader);
+                  setContent(newContent.join("\n\n"));
+                }}
+              />
             </div>
           )}
           <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
