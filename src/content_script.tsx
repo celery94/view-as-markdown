@@ -4,7 +4,6 @@ import "./index.css";
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -64,7 +63,7 @@ const ReadingMode = () => {
             </div>
           )}
           <div className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+            <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>
       </div>
