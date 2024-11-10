@@ -8,7 +8,9 @@ import ReactMarkdown from "react-markdown";
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
-  const [showMarkdown, setShowMarkdown] = React.useState(false);
+  const [showMarkdown, setShowMarkdown] = React.useState(true);
+  const [copied, setCopied] = React.useState(false);
+  const renderedContentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -37,6 +39,18 @@ const ReadingMode = () => {
     });
   }, [isOpen]);
 
+  const handleCopy = async () => {
+    try {
+      if (renderedContentRef.current) {
+        await navigator.clipboard.writeText(renderedContentRef.current.innerText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -45,6 +59,9 @@ const ReadingMode = () => {
         <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-base-200 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
           <div className="flex items-center gap-2">
+            <button className={`btn btn-sm ${copied ? "btn-success" : "btn-ghost"}`} onClick={handleCopy}>
+              {copied ? "Copied!" : "Copy Content"}
+            </button>
             <button className={`btn btn-sm ${showMarkdown ? "btn-primary" : "btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
               {showMarkdown ? "Hide Markdown" : "Show Markdown"}
             </button>
@@ -62,7 +79,7 @@ const ReadingMode = () => {
               <textarea className="textarea textarea-bordered w-full h-full font-mono" value={content} onChange={(e) => setContent(e.target.value)} />
             </div>
           )}
-          <div className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
+          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>
