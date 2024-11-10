@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 const ReadingMode = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
+  const [showMarkdown, setShowMarkdown] = React.useState(false);
 
   React.useEffect(() => {
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -44,18 +45,25 @@ const ReadingMode = () => {
       <div className="modal-box max-w-7xl h-[90vh] flex flex-col p-0 bg-base-100">
         <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-base-200 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
-          <button className="btn btn-square btn-ghost" onClick={() => setIsOpen(false)}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <button className={`btn btn-sm ${showMarkdown ? "btn-primary" : "btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
+              {showMarkdown ? "Hide Markdown" : "Show Markdown"}
+            </button>
+            <button className="btn btn-square btn-ghost" onClick={() => setIsOpen(false)}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          <div className="w-1/2 p-4 border-r">
-            <textarea className="textarea textarea-bordered w-full h-full font-mono" value={content} onChange={(e) => setContent(e.target.value)} />
-          </div>
-          <div className="w-1/2 p-4 overflow-y-auto prose lg:prose-xl max-w-none">
+          {showMarkdown && (
+            <div className="w-1/2 p-4 border-r">
+              <textarea className="textarea textarea-bordered w-full h-full font-mono" value={content} onChange={(e) => setContent(e.target.value)} />
+            </div>
+          )}
+          <div className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
           </div>
         </div>
