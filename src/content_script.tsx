@@ -40,16 +40,22 @@ const ReadingMode = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 z-999 flex w-full justify-center items-center">
-      <button className="absolute right-2 top-2 border-none text-2xl cursor-pointer" onClick={() => setIsOpen(false)}>
-        ×
-      </button>
-      <div className="bg-white p-5 rounded w-4/5 max-h-[90vh] overflow-y-auto relative">
-        <div className="flex">
-          <div className="w-1/2 p-2">
-            <textarea className="w-full h-full border p-2" value={content} onChange={(e) => setContent(e.target.value)} />
+    <div className="modal modal-open">
+      <div className="modal-box max-w-7xl h-[90vh] flex flex-col p-0 bg-base-100">
+        <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-base-200 border-b">
+          <h3 className="font-bold text-lg">Markdown View</h3>
+          <button className="btn btn-square btn-ghost" onClick={() => setIsOpen(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex flex-1 overflow-hidden">
+          <div className="w-1/2 p-4 border-r">
+            <textarea className="textarea textarea-bordered w-full h-full font-mono" value={content} onChange={(e) => setContent(e.target.value)} />
           </div>
-          <div className="w-1/2 p-2 overflow-y-auto prose lg:prose-xl">
+          <div className="w-1/2 p-4 overflow-y-auto prose lg:prose-xl max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
           </div>
         </div>
