@@ -1,39 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import "./index.css";
 
 const Options = () => {
-  const [color, setColor] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [like, setLike] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string>("");
 
   useEffect(() => {
-    // Restores select box and checkbox state using the preferences
-    // stored in chrome.storage.
     chrome.storage.sync.get(
       {
-        favoriteColor: "red",
-        likesColor: true,
         apiKey: "",
       },
       (items) => {
-        setColor(items.favoriteColor);
-        setLike(items.likesColor);
         setApiKey(items.apiKey);
       }
     );
   }, []);
 
   const saveOptions = () => {
-    // Saves options to chrome.storage.sync.
     chrome.storage.sync.set(
       {
-        favoriteColor: color,
-        likesColor: like,
         apiKey: apiKey,
       },
       () => {
-        // Update status to let user know options were saved.
         setStatus("Options saved.");
         const id = setTimeout(() => {
           setStatus("");
@@ -44,29 +33,32 @@ const Options = () => {
   };
 
   return (
-    <>
-      <div>
-        Favorite color:{" "}
-        <select value={color} onChange={(event) => setColor(event.target.value)}>
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="blue">blue</option>
-          <option value="yellow">yellow</option>
-        </select>
+    <div className="min-h-screen d-bg-base-200 flex items-center justify-center" data-theme="light">
+      <div className="d-card w-96 d-bg-base-100 d-shadow-xl">
+        <div className="d-card-body">
+          <h2 className="d-card-title">Extension Settings</h2>
+
+          <div className="d-form-control w-full">
+            <label className="d-label">
+              <span className="d-label-text">API Key</span>
+            </label>
+            <input type="text" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="d-input d-input-bordered w-full" placeholder="Enter your API key" />
+          </div>
+
+          {status && (
+            <div className="d-alert d-alert-success">
+              <span>{status}</span>
+            </div>
+          )}
+
+          <div className="d-card-actions justify-end mt-4">
+            <button className="d-btn d-btn-primary" onClick={saveOptions}>
+              Save
+            </button>
+          </div>
+        </div>
       </div>
-      <div>
-        <label>
-          <input type="checkbox" checked={like} onChange={(event) => setLike(event.target.checked)} />I like colors.
-        </label>
-      </div>
-      <div>
-        <label>
-          API Key: <input type="text" value={apiKey} onChange={(event) => setApiKey(event.target.value)} />
-        </label>
-      </div>
-      <div>{status}</div>
-      <button onClick={saveOptions}>Save</button>
-    </>
+    </div>
   );
 };
 
