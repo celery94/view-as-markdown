@@ -123,24 +123,24 @@ description: ${article.excerpt}
   if (!isOpen) return null;
 
   return (
-    <div className="modal modal-open">
-      <div className="modal-box max-w-7xl h-[90vh] flex flex-col p-0 bg-base-100">
-        <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-base-200 border-b">
+    <div className="d-modal d-modal-open" data-theme="light">
+      <div className="d-modal-box max-w-7xl h-[90vh] flex flex-col p-0 d-bg-base-100">
+        <div className="sticky top-0 flex justify-between items-center px-4 py-2 d-bg-base-200 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
           <div className="flex items-center gap-2">
-            <button className={`btn btn-sm ${copiedMarkdown ? "btn-success" : "btn-ghost"}`} onClick={handleCopyMarkdown}>
+            <button className={`d-btn d-btn-sm ${copiedMarkdown ? "d-btn-success" : "d-btn-ghost"}`} onClick={handleCopyMarkdown}>
               {copiedMarkdown ? "Copied!" : "Copy Markdown"}
             </button>
-            <button className={`btn btn-sm ${copied ? "btn-success" : "btn-ghost"}`} onClick={handleCopy}>
+            <button className={`d-btn d-btn-sm ${copied ? "d-btn-success" : "d-btn-ghost"}`} onClick={handleCopy}>
               {copied ? "Copied!" : "Copy Content"}
             </button>
-            <button className={`btn btn-sm ${showMarkdown ? "btn-primary" : "btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
+            <button className={`d-btn d-btn-sm ${showMarkdown ? "d-btn-primary" : "d-btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
               {showMarkdown ? "Hide Markdown" : "Show Markdown"}
             </button>
-            <button className={`btn btn-sm ${isTranslating ? "btn-disabled" : "btn-ghost"}`} onClick={handleTranslate} disabled={isTranslating}>
+            <button className={`d-btn d-btn-sm ${isTranslating ? "d-btn-disabled" : "d-btn-ghost"}`} onClick={handleTranslate} disabled={isTranslating}>
               {isTranslating ? "Translating..." : "Translate"}
             </button>
-            <button className="btn btn-square btn-ghost" onClick={() => setIsOpen(false)}>
+            <button className="d-btn d-btn-square d-btn-ghost" onClick={() => setIsOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -152,7 +152,7 @@ description: ${article.excerpt}
           {showMarkdown && (
             <div className="w-1/2 p-4 border-r">
               <textarea
-                className="textarea textarea-bordered w-full h-full font-mono"
+                className="d-textarea d-textarea-bordered w-full h-full font-mono"
                 value={header + "\n\n" + content}
                 onChange={(e) => {
                   const [newHeader, ...newContent] = e.target.value.split("\n\n");
@@ -162,7 +162,7 @@ description: ${article.excerpt}
               />
             </div>
           )}
-          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose lg:prose-xl max-w-none`}>
+          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto d-prose lg:d-prose-xl max-w-none`}>
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>
