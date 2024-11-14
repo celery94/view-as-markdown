@@ -5,6 +5,7 @@ const Options = () => {
   const [color, setColor] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [like, setLike] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string>("");
 
   useEffect(() => {
     // Restores select box and checkbox state using the preferences
@@ -13,10 +14,12 @@ const Options = () => {
       {
         favoriteColor: "red",
         likesColor: true,
+        apiKey: "",
       },
       (items) => {
         setColor(items.favoriteColor);
         setLike(items.likesColor);
+        setApiKey(items.apiKey);
       }
     );
   }, []);
@@ -27,6 +30,7 @@ const Options = () => {
       {
         favoriteColor: color,
         likesColor: like,
+        apiKey: apiKey,
       },
       () => {
         // Update status to let user know options were saved.
@@ -53,6 +57,11 @@ const Options = () => {
       <div>
         <label>
           <input type="checkbox" checked={like} onChange={(event) => setLike(event.target.checked)} />I like colors.
+        </label>
+      </div>
+      <div>
+        <label>
+          API Key: <input type="text" value={apiKey} onChange={(event) => setApiKey(event.target.value)} />
         </label>
       </div>
       <div>{status}</div>

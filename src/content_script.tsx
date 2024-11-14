@@ -12,6 +12,7 @@ const ReadingMode = () => {
   const [showMarkdown, setShowMarkdown] = React.useState(true);
   const [copied, setCopied] = React.useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = React.useState(false);
+  const [isTranslating, setIsTranslating] = React.useState(false);
   const renderedContentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -75,6 +76,50 @@ description: ${article.excerpt}
     }
   };
 
+  const handleTranslate = async () => {
+    setIsTranslating(true);
+    try {
+      // Retrieve API key from storage
+      chrome.storage.sync.get(["apiKey"], async (result) => {
+        const apiKey = result.apiKey;
+        if (!apiKey) {
+          alert("API Key not set. Please set it in the extension options.");
+          setIsTranslating(false);
+          return;
+        }
+
+        const response = await fetch("https://aidehub.top/v1/workflows/run", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputs: {
+              input_text: content,
+              language: "简体中文",
+            },
+            response_mode: "blocking",
+            user: "chrome-extension",
+          }),
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error("Network response was not ok");
+        }
+
+        const responseData = await response.json();
+        const translatedText = responseData.data.outputs.final;
+        setContent(translatedText);
+      });
+    } catch (error) {
+      console.error("Translation failed:", error);
+      setContent(content);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -91,6 +136,9 @@ description: ${article.excerpt}
             </button>
             <button className={`btn btn-sm ${showMarkdown ? "btn-primary" : "btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
               {showMarkdown ? "Hide Markdown" : "Show Markdown"}
+            </button>
+            <button className={`btn btn-sm ${isTranslating ? "btn-disabled" : "btn-ghost"}`} onClick={handleTranslate} disabled={isTranslating}>
+              {isTranslating ? "Translating..." : "Translate"}
             </button>
             <button className="btn btn-square btn-ghost" onClick={() => setIsOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
