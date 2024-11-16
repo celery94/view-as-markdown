@@ -13,6 +13,7 @@ const ReadingMode = () => {
   const [copied, setCopied] = React.useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = React.useState(false);
   const [isTranslating, setIsTranslating] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
   const renderedContentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -21,6 +22,7 @@ const ReadingMode = () => {
         const documentClone = document.cloneNode(true) as Document;
         const reader = new Readability(documentClone);
         const article = reader.parse();
+
         if (article) {
           const turndownService = new TurndownService({
             headingStyle: "atx",
@@ -35,7 +37,7 @@ const ReadingMode = () => {
           });
 
           const header = `---
-pubDatetime: ${article.publishedTime.substring(0, 10)}
+pubDatetime: ${article.publishedTime ? article.publishedTime.substring(0, 10) : new Date().toISOString().substring(0, 10)}
 tags: []
 source: ${window.location.href}
 author: ${article.byline}
@@ -47,12 +49,18 @@ description: ${article.excerpt}
 
           const markdown = `# ${article.title}` + "\n\n" + turndownService.turndown(article.content);
           setContent(markdown);
-          setIsOpen(!isOpen);
+          setErrorMessage("");
+          setIsOpen(true);
           sendResponse({ success: true });
+        } else {
+          setErrorMessage("Unable to parse content for reading mode.");
+          sendResponse({ success: false, error: "Parsing failed" });
         }
       }
+
+      return true;
     });
-  }, [isOpen]);
+  }, []);
 
   const handleCopy = async () => {
     try {
@@ -140,7 +148,13 @@ description: ${article.excerpt}
             <button className={`d-btn d-btn-sm ${isTranslating ? "d-btn-disabled" : "d-btn-ghost"}`} onClick={handleTranslate} disabled={isTranslating}>
               {isTranslating ? "Translating..." : "Translate"}
             </button>
-            <button className="d-btn d-btn-square d-btn-ghost" onClick={() => setIsOpen(false)}>
+            <button
+              className="d-btn d-btn-square d-btn-ghost"
+              onClick={() => {
+                setIsOpen(false);
+                setErrorMessage("");
+              }}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -148,24 +162,30 @@ description: ${article.excerpt}
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          {showMarkdown && (
-            <div className="w-1/2 p-4 border-r">
-              <textarea
-                className="d-textarea d-textarea-bordered w-full h-full font-mono"
-                value={header + "\n\n" + content}
-                onChange={(e) => {
-                  const [newHeader, ...newContent] = e.target.value.split("\n\n");
-                  setHeader(newHeader);
-                  setContent(newContent.join("\n\n"));
-                }}
-              />
-            </div>
-          )}
-          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose max-w-none`}>
-            <ReactMarkdown>{content}</ReactMarkdown>
+        {errorMessage ? (
+          <div className="flex justify-center items-center flex-1">
+            <p className="text-red-500">{errorMessage}</p>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-1 overflow-hidden">
+            {showMarkdown && (
+              <div className="w-1/2 p-4 border-r">
+                <textarea
+                  className="d-textarea d-textarea-bordered w-full h-full font-mono"
+                  value={header + "\n\n" + content}
+                  onChange={(e) => {
+                    const [newHeader, ...newContent] = e.target.value.split("\n\n");
+                    setHeader(newHeader);
+                    setContent(newContent.join("\n\n"));
+                  }}
+                />
+              </div>
+            )}
+            <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose max-w-none`}>
+              <ReactMarkdown>{content}</ReactMarkdown>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -12,8 +12,10 @@ const Popup = () => {
             type: "TOGGLE_READING_MODE",
           },
           (response) => {
-            if (response.success) {
+            if (response && response.success) {
               window.close();
+            } else {
+              // Optionally handle the failure case
             }
           }
         );
