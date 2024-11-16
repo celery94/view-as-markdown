@@ -33,7 +33,7 @@ const Options = () => {
   };
 
   return (
-    <div className="min-h-screen d-bg-base-200 flex items-center justify-center" data-theme="light">
+    <div id="view-as-markdown-extension" className="min-h-screen d-bg-base-200 flex items-center justify-center" data-theme="light">
       <div className="d-card w-96 d-bg-base-100 d-shadow-xl">
         <div className="d-card-body">
           <h2 className="d-card-title">Extension Settings</h2>

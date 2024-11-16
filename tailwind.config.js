@@ -1,5 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx,html}"],
+  important: "#view-as-markdown-extension",
   theme: {
     extend: {
       zIndex: {
@@ -14,7 +15,7 @@ module.exports = {
     utils: true,
     logs: false,
     rtl: false,
-    prefix: "d-", // 添加前缀配置
+    prefix: "d-",
   },
-  plugins: [require("daisyui")],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
 };

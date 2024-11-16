@@ -123,7 +123,7 @@ description: ${article.excerpt}
   if (!isOpen) return null;
 
   return (
-    <div className="d-modal d-modal-open" data-theme="light">
+    <div id="view-as-markdown-extension" className="d-modal d-modal-open" data-theme="light">
       <div className="d-modal-box max-w-7xl h-[90vh] flex flex-col p-0 d-bg-base-100">
         <div className="sticky top-0 flex justify-between items-center px-4 py-2 d-bg-base-200 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
@@ -162,7 +162,7 @@ description: ${article.excerpt}
               />
             </div>
           )}
-          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto d-prose lg:d-prose-xl max-w-none`}>
+          <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose max-w-none`}>
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>

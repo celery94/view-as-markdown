@@ -26,10 +26,10 @@ const Popup = () => {
   }, []);
 
   return (
-    <>
+    <div id="view-as-markdown-extension">
       {/* Remove the button if it's no longer needed */}
       {/* <button onClick={toggleReadingMode}>Reading Mode</button> */}
-    </>
+    </div>
   );
 };
 
