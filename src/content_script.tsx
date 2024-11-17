@@ -17,6 +17,10 @@ const ReadingMode = () => {
   const renderedContentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    console.log("isTranslating changed:", isTranslating);
+  }, [isTranslating]);
+
+  React.useEffect(() => {
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (msg.type === "TOGGLE_READING_MODE") {
         const documentClone = document.cloneNode(true) as Document;
@@ -84,42 +88,53 @@ description: ${article.excerpt}
     }
   };
 
+  async function getApiKey() {
+    //get the api key from the storage
+    return new Promise<string>((resolve) => {
+      chrome.storage.sync.get(
+        {
+          apiKey: "",
+        },
+        (items) => {
+          resolve(items.apiKey);
+        }
+      );
+    });
+  }
+
   const handleTranslate = async () => {
+    const apiKey = await getApiKey();
+    if (!apiKey) {
+      setErrorMessage("API key is not set. Please set it in the extension options.");
+      return;
+    }
+
     setIsTranslating(true);
     try {
       // Retrieve API key from storage
-      chrome.storage.sync.get(["apiKey"], async (result) => {
-        const apiKey = result.apiKey;
-        if (!apiKey) {
-          alert("API Key not set. Please set it in the extension options.");
-          setIsTranslating(false);
-          return;
-        }
-
-        const response = await fetch("https://aidehub.top/v1/workflows/run", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
+      const response = await fetch("https://aidehub.top/v1/workflows/run", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: {
+            input_text: content,
+            language: "简体中文",
           },
-          body: JSON.stringify({
-            inputs: {
-              input_text: content,
-              language: "简体中文",
-            },
-            response_mode: "blocking",
-            user: "chrome-extension",
-          }),
-        });
-
-        if (!response.ok || !response.body) {
-          throw new Error("Network response was not ok");
-        }
-
-        const responseData = await response.json();
-        const translatedText = responseData.data.outputs.final;
-        setContent(translatedText);
+          response_mode: "blocking",
+          user: "chrome-extension",
+        }),
       });
+
+      if (!response.ok || !response.body) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+      const translatedText = responseData.data.outputs.final;
+      setContent(translatedText);
     } catch (error) {
       console.error("Translation failed:", error);
       setContent(content);
