@@ -41,7 +41,11 @@ const ReadingMode = () => {
           });
 
           const header = `---
-pubDatetime: ${article.publishedTime ? article.publishedTime.substring(0, 10) : new Date().toISOString().substring(0, 10)}
+pubDatetime: ${
+            article.publishedTime
+              ? article.publishedTime.substring(0, 10)
+              : new Date().toISOString().substring(0, 10)
+          }
 tags: []
 source: ${window.location.href}
 author: ${article.byline}
@@ -51,7 +55,10 @@ description: ${article.excerpt}
 
           setHeader(header);
 
-          const markdown = `# ${article.title}` + "\n\n" + turndownService.turndown(article.content);
+          const markdown =
+            `# ${article.title}` +
+            "\n\n" +
+            turndownService.turndown(article.content);
           setContent(markdown);
           setErrorMessage("");
           setIsOpen(true);
@@ -69,7 +76,9 @@ description: ${article.excerpt}
   const handleCopy = async () => {
     try {
       if (renderedContentRef.current) {
-        await navigator.clipboard.writeText(renderedContentRef.current.innerText);
+        await navigator.clipboard.writeText(
+          renderedContentRef.current.innerText
+        );
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
@@ -105,7 +114,9 @@ description: ${article.excerpt}
   const handleTranslate = async () => {
     const apiKey = await getApiKey();
     if (!apiKey) {
-      setErrorMessage("API key is not set. Please set it in the extension options.");
+      setErrorMessage(
+        "API key is not set. Please set it in the extension options."
+      );
       return;
     }
 
@@ -146,32 +157,75 @@ description: ${article.excerpt}
   if (!isOpen) return null;
 
   return (
-    <div id="view-as-markdown-extension" className="d-modal d-modal-open" data-theme="light">
-      <div className="d-modal-box max-w-7xl h-[90vh] flex flex-col p-0 d-bg-base-100">
-        <div className="sticky top-0 flex justify-between items-center px-4 py-2 d-bg-base-200 border-b">
+    <div
+      id="view-as-markdown-extension"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+    >
+      <div className="bg-white rounded-lg max-w-7xl h-[90vh] flex flex-col p-0">
+        <div className="sticky top-0 flex justify-between items-center px-4 py-2 bg-gray-100 border-b">
           <h3 className="font-bold text-lg">Markdown View</h3>
           <div className="flex items-center gap-2">
-            <button className={`d-btn d-btn-sm ${copiedMarkdown ? "d-btn-success" : "d-btn-ghost"}`} onClick={handleCopyMarkdown}>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${
+                copiedMarkdown
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+              onClick={handleCopyMarkdown}
+            >
               {copiedMarkdown ? "Copied!" : "Copy Markdown"}
             </button>
-            <button className={`d-btn d-btn-sm ${copied ? "d-btn-success" : "d-btn-ghost"}`} onClick={handleCopy}>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${
+                copied
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+              onClick={handleCopy}
+            >
               {copied ? "Copied!" : "Copy Content"}
             </button>
-            <button className={`d-btn d-btn-sm ${showMarkdown ? "d-btn-primary" : "d-btn-ghost"}`} onClick={() => setShowMarkdown(!showMarkdown)}>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${
+                showMarkdown
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+              onClick={() => setShowMarkdown(!showMarkdown)}
+            >
               {showMarkdown ? "Hide Markdown" : "Show Markdown"}
             </button>
-            <button className={`d-btn d-btn-sm ${isTranslating ? "d-btn-disabled" : "d-btn-ghost"}`} onClick={handleTranslate} disabled={isTranslating}>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${
+                isTranslating
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+              onClick={handleTranslate}
+              disabled={isTranslating}
+            >
               {isTranslating ? "Translating..." : "Translate"}
             </button>
             <button
-              className="d-btn d-btn-square d-btn-ghost"
+              className="p-2 rounded-lg hover:bg-gray-200"
               onClick={() => {
                 setIsOpen(false);
                 setErrorMessage("");
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -186,17 +240,23 @@ description: ${article.excerpt}
             {showMarkdown && (
               <div className="w-1/2 p-4 border-r">
                 <textarea
-                  className="d-textarea d-textarea-bordered w-full h-full font-mono"
+                  className="w-full h-full p-2 border rounded-md font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={header + "\n\n" + content}
                   onChange={(e) => {
-                    const [newHeader, ...newContent] = e.target.value.split("\n\n");
+                    const [newHeader, ...newContent] =
+                      e.target.value.split("\n\n");
                     setHeader(newHeader);
                     setContent(newContent.join("\n\n"));
                   }}
                 />
               </div>
             )}
-            <div ref={renderedContentRef} className={`${showMarkdown ? "w-1/2" : "w-full"} p-4 overflow-y-auto prose max-w-none`}>
+            <div
+              ref={renderedContentRef}
+              className={`${
+                showMarkdown ? "w-1/2" : "w-full"
+              } p-4 overflow-y-auto prose max-w-none`}
+            >
               <ReactMarkdown>{content}</ReactMarkdown>
             </div>
           </div>

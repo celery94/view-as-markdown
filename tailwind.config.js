@@ -8,14 +8,5 @@ module.exports = {
       },
     },
   },
-  daisyui: {
-    styled: true,
-    themes: ["light"],
-    base: true,
-    utils: true,
-    logs: false,
-    rtl: false,
-    prefix: "d-",
-  },
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  plugins: [require("@tailwindcss/typography")],
 };

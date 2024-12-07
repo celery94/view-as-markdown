@@ -33,26 +33,26 @@ const Options = () => {
   };
 
   return (
-    <div id="view-as-markdown-extension" className="min-h-screen d-bg-base-200 flex items-center justify-center" data-theme="light">
-      <div className="d-card w-96 d-bg-base-100 d-shadow-xl">
-        <div className="d-card-body">
-          <h2 className="d-card-title">Extension Settings</h2>
+    <div id="view-as-markdown-extension" className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-xl w-96">
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-4">Extension Settings</h2>
 
-          <div className="d-form-control w-full">
-            <label className="d-label">
-              <span className="d-label-text">API Key</span>
+          <div className="w-full">
+            <label className="block">
+              <span className="text-gray-700">API Key</span>
             </label>
-            <input type="text" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="d-input d-input-bordered w-full" placeholder="Enter your API key" />
+            <input type="text" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Enter your API key" />
           </div>
 
           {status && (
-            <div className="d-alert d-alert-success">
+            <div className="mt-4 p-4 bg-green-100 text-green-700 rounded-md">
               <span>{status}</span>
             </div>
           )}
 
-          <div className="d-card-actions justify-end mt-4">
-            <button className="d-btn d-btn-primary" onClick={saveOptions}>
+          <div className="flex justify-end mt-4">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onClick={saveOptions}>
               Save
             </button>
           </div>
